@@ -3,7 +3,7 @@ import pygame
 
 
 class Projectile:
-    def __init__(self, x, y, angle, speed, lifetime, color, size):
+    def __init__(self, x, y, angle, speed, lifetime, color, size, damage):
         self.x = x
         self.y = y
         self.angle = angle
@@ -11,6 +11,7 @@ class Projectile:
         self.lifetime = lifetime
         self.color = color
         self.size = size
+        self.damage = damage
 
     def update(self):
         self.x += self.speed * math.cos(math.radians(self.angle))
@@ -24,7 +25,7 @@ class Projectile:
 class Bullet(Projectile):
     def __init__(self, x, y, angle):
         super().__init__(
-            x, y, angle, speed=10, lifetime=60, color=(255, 255, 0), size=3
+            x, y, angle, speed=10, lifetime=60, color=(255, 255, 0), size=3, damage=2
         )
 
     def draw(self, surface):
@@ -33,8 +34,9 @@ class Bullet(Projectile):
 
 class Missile(Projectile):
     def __init__(self, x, y, angle):
-        super().__init__(x, y, angle, speed=5, lifetime=120, color=(255, 0, 0), size=6)
-        self.damage = 3  # More damage than bullets
+        super().__init__(
+            x, y, angle, speed=5, lifetime=120, color=(255, 0, 0), size=6, damage=20
+        )
 
     def draw(self, surface):
         pygame.draw.rect(
@@ -127,5 +129,3 @@ class Helicopter:
         end_x = self.x + 30 * math.cos(math.radians(self.angle))
         end_y = self.y - 30 * math.sin(math.radians(self.angle))
         pygame.draw.line(surface, (255, 255, 255), (self.x, self.y), (end_x, end_y), 3)
-        for projectile in self.projectiles:
-            projectile.draw(surface)

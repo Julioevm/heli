@@ -1,5 +1,5 @@
 import pygame
-from helicopter import Helicopter
+from game_map import GameMap
 
 # Initialize Pygame
 pygame.init()
@@ -11,9 +11,10 @@ pygame.display.set_caption("Desert Strike Clone")
 
 # Colors
 BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
-# Create helicopter
-heli = Helicopter(WIDTH, HEIGHT)
+# Create game map
+game_map = GameMap(WIDTH, HEIGHT)
 
 # Game loop
 running = True
@@ -27,26 +28,32 @@ while running:
     # Handle input
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        heli.rotate(1)
+        game_map.helicopter.rotate(1)
     if keys[pygame.K_RIGHT]:
-        heli.rotate(-1)
+        game_map.helicopter.rotate(-1)
     if keys[pygame.K_UP]:
-        heli.accelerate()
+        game_map.helicopter.accelerate()
     else:
-        heli.decelerate()
+        game_map.helicopter.decelerate()
     if keys[pygame.K_SPACE]:
-        heli.shoot()
-    if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:  # Check for Ctrl key press
-        heli.shoot_missile()
+        game_map.helicopter.shoot()
+    if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:
+        game_map.helicopter.shoot_missile()
     if keys[pygame.K_ESCAPE]:
         running = False
 
     # Update game state
-    heli.update()
+    game_map.update()
 
     # Draw
     screen.fill(BLACK)
-    heli.draw(screen)
+    game_map.draw(screen)
+
+    # Display enemy count
+    font = pygame.font.Font(None, 36)
+    enemy_count = font.render(f"Enemies: {len(game_map.enemies)}", True, WHITE)
+    screen.blit(enemy_count, (10, 10))
+
     pygame.display.flip()
 
     # Cap the frame rate
