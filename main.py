@@ -36,6 +36,8 @@ while running:
         heli.decelerate()
     if keys[pygame.K_SPACE]:
         heli.shoot()
+    if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:  # Check for Ctrl key press
+        heli.shoot_missile()
     if keys[pygame.K_ESCAPE]:
         running = False
 

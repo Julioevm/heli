@@ -2,13 +2,15 @@ import math
 import pygame
 
 
-class Bullet:
-    def __init__(self, x, y, angle):
+class Projectile:
+    def __init__(self, x, y, angle, speed, lifetime, color, size):
         self.x = x
         self.y = y
         self.angle = angle
-        self.speed = 10
-        self.lifetime = 60  # frames
+        self.speed = speed
+        self.lifetime = lifetime
+        self.color = color
+        self.size = size
 
     def update(self):
         self.x += self.speed * math.cos(math.radians(self.angle))
@@ -16,7 +18,35 @@ class Bullet:
         self.lifetime -= 1
 
     def draw(self, surface):
-        pygame.draw.circle(surface, (255, 255, 0), (int(self.x), int(self.y)), 3)
+        raise NotImplementedError("Subclasses must implement draw method")
+
+
+class Bullet(Projectile):
+    def __init__(self, x, y, angle):
+        super().__init__(
+            x, y, angle, speed=10, lifetime=60, color=(255, 255, 0), size=3
+        )
+
+    def draw(self, surface):
+        pygame.draw.circle(surface, self.color, (int(self.x), int(self.y)), self.size)
+
+
+class Missile(Projectile):
+    def __init__(self, x, y, angle):
+        super().__init__(x, y, angle, speed=5, lifetime=120, color=(255, 0, 0), size=6)
+        self.damage = 3  # More damage than bullets
+
+    def draw(self, surface):
+        pygame.draw.rect(
+            surface,
+            self.color,
+            (
+                int(self.x) - self.size // 2,
+                int(self.y) - self.size // 2,
+                self.size,
+                self.size,
+            ),
+        )
 
 
 class Helicopter:
@@ -31,9 +61,11 @@ class Helicopter:
         self.max_speed = 5
         self.acceleration = 0.1
         self.deceleration = 0.05
-        self.bullets = []
-        self.shoot_cooldown = 0
-        self.shoot_delay = 5  # frames between shots
+        self.projectiles = []
+        self.bullet_cooldown = 0
+        self.bullet_delay = 5  # frames between shots
+        self.missile_cooldown = 0
+        self.missile_delay = 30  # Longer delay between missile shots
 
     def rotate(self, direction):
         self.angle += direction * 3
@@ -58,11 +90,18 @@ class Helicopter:
             self.vy *= scale
 
     def shoot(self):
-        if self.shoot_cooldown == 0:
-            bullet_x = self.x + 30 * math.cos(math.radians(self.angle))
-            bullet_y = self.y - 30 * math.sin(math.radians(self.angle))
-            self.bullets.append(Bullet(bullet_x, bullet_y, self.angle))
-            self.shoot_cooldown = self.shoot_delay
+        if self.bullet_cooldown == 0:
+            projectile_x = self.x + 30 * math.cos(math.radians(self.angle))
+            projectile_y = self.y - 30 * math.sin(math.radians(self.angle))
+            self.projectiles.append(Bullet(projectile_x, projectile_y, self.angle))
+            self.bullet_cooldown = self.bullet_delay
+
+    def shoot_missile(self):
+        if self.missile_cooldown == 0:
+            projectile_x = self.x + 30 * math.cos(math.radians(self.angle))
+            projectile_y = self.y - 30 * math.sin(math.radians(self.angle))
+            self.projectiles.append(Missile(projectile_x, projectile_y, self.angle))
+            self.missile_cooldown = self.missile_delay
 
     def update(self):
         self.x += self.vx
@@ -72,18 +111,21 @@ class Helicopter:
         self.x = max(0, min(self.x, self.width))
         self.y = max(0, min(self.y, self.height))
 
-        if self.shoot_cooldown > 0:
-            self.shoot_cooldown -= 1
+        if self.bullet_cooldown > 0:
+            self.bullet_cooldown -= 1
 
-        for bullet in self.bullets[:]:
-            bullet.update()
-            if bullet.lifetime <= 0:
-                self.bullets.remove(bullet)
+        if self.missile_cooldown > 0:
+            self.missile_cooldown -= 1
+
+        for projectile in self.projectiles[:]:
+            projectile.update()
+            if projectile.lifetime <= 0:
+                self.projectiles.remove(projectile)
 
     def draw(self, surface):
         pygame.draw.circle(surface, (255, 255, 255), (int(self.x), int(self.y)), 20)
         end_x = self.x + 30 * math.cos(math.radians(self.angle))
         end_y = self.y - 30 * math.sin(math.radians(self.angle))
         pygame.draw.line(surface, (255, 255, 255), (self.x, self.y), (end_x, end_y), 3)
-        for bullet in self.bullets:
-            bullet.draw(surface)
+        for projectile in self.projectiles:
+            projectile.draw(surface)
