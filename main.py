@@ -36,6 +36,8 @@ while running:
         heli.decelerate()
     if keys[pygame.K_SPACE]:
         heli.shoot()
+    if keys[pygame.K_ESCAPE]:
+        running = False
 
     # Update game state
     heli.update()
