@@ -20,8 +20,6 @@ class GameMap:
         self.width = (map_width_tiles + map_height_tiles) * self.tile_width // 2
         self.height = (map_width_tiles + map_height_tiles) * self.tile_height // 4
 
-        print(f"Map size: {self.width}x{self.height}")
-
         # Initialize helicopter at the center of the map
         self.helicopter = Helicopter(self.width // 2, self.height // 2)
 
@@ -85,6 +83,10 @@ class GameMap:
             enemy_pos = (enemy.x - self.camera.x, enemy.y - self.camera.y)
             enemy.draw(surface, enemy_pos)
 
+        # Draw helicopter
+        helicopter_pos = self.adjust_for_camera(self.helicopter.x, self.helicopter.y)
+        self.helicopter.draw(surface, helicopter_pos)
+
         # Draw helicopter projectiles
         for projectile in self.helicopter.projectiles:
             projectile_pos = (
@@ -92,11 +94,6 @@ class GameMap:
                 projectile.y - self.camera.y,
             )
             projectile.draw(surface, projectile_pos)
-
-        # Draw helicopter
-        helicopter_pos = self.adjust_for_camera(self.helicopter.x, self.helicopter.y)
-        self.helicopter.draw(surface, helicopter_pos)
-
         # Draw minimap
         self.mini_map.draw(
             surface, surface.get_width() - 160, 10
