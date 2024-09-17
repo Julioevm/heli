@@ -5,9 +5,7 @@ from pygame.surface import Surface
 
 
 class Helicopter:
-    def __init__(self, width, height, x, y):
-        self.width = width
-        self.height = height
+    def __init__(self, x, y):
         self.x = x
         self.y = y
         self.angle = 0
@@ -62,10 +60,6 @@ class Helicopter:
         self.x += self.vx
         self.y += self.vy
 
-        # Ensure the helicopter stays within the screen bounds
-        self.x = max(0, min(self.x, self.width))
-        self.y = max(0, min(self.y, self.height))
-
         if self.bullet_cooldown > 0:
             self.bullet_cooldown -= 1
 
@@ -77,8 +71,19 @@ class Helicopter:
             if projectile.lifetime <= 0:
                 self.projectiles.remove(projectile)
 
-    def draw(self, surface: Surface, position: tuple[int, int]):
-        pygame.draw.circle(surface, (255, 255, 255), position, 20)
-        end_x = position[0] + 30 * math.cos(math.radians(self.angle))
-        end_y = position[1] - 30 * math.sin(math.radians(self.angle))
-        pygame.draw.line(surface, (255, 255, 255), position, (end_x, end_y), 3)
+    def draw(self, surface: Surface, camera_offset: tuple[int, int]):
+        pygame.draw.circle(
+            surface,
+            (255, 255, 255),
+            [self.x - camera_offset[0], self.y - camera_offset[1]],
+            20,
+        )
+        end_x = self.x + 30 * math.cos(math.radians(self.angle))
+        end_y = self.y - 30 * math.sin(math.radians(self.angle))
+        pygame.draw.line(
+            surface,
+            (255, 255, 255),
+            [self.x - camera_offset[0], self.y - camera_offset[1]],
+            [end_x - camera_offset[0], end_y - camera_offset[1]],
+            3,
+        )
