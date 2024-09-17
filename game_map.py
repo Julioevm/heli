@@ -16,6 +16,7 @@ class GameMap:
         # Calculate map dimensions for isometric view
         map_width_tiles = self.tmx_data.width
         map_height_tiles = self.tmx_data.height
+
         self.width = (map_width_tiles + map_height_tiles) * self.tile_width // 2
         self.height = (map_width_tiles + map_height_tiles) * self.tile_height // 4
 
@@ -93,8 +94,8 @@ class GameMap:
             projectile.draw(surface, projectile_pos)
 
         # Draw helicopter
-        camera_offset = (self.camera.x, self.camera.y)
-        self.helicopter.draw(surface, camera_offset)
+        helicopter_pos = self.adjust_for_camera(self.helicopter.x, self.helicopter.y)
+        self.helicopter.draw(surface, helicopter_pos)
 
         # Draw minimap
         self.mini_map.draw(
@@ -107,3 +108,19 @@ class GameMap:
             abs(projectile.x - enemy.x) < enemy.size // 2
             and abs(projectile.y - enemy.y) < enemy.size // 2
         )
+
+    def convert_to_isometric(self, grid_x, grid_y):
+        iso_x = (grid_x - grid_y) * self.tile_width // 2
+        iso_y = (grid_x + grid_y) * self.tile_height // 4
+        return iso_x, iso_y
+
+    # Turn the isometric coordinates to screen coordinate
+    def iso_to_screen(self, iso_x, iso_y):
+        screen_x = iso_x + iso_y
+        screen_y = iso_y - iso_x
+        return screen_x, screen_y
+
+    def adjust_for_camera(self, iso_x, iso_y):
+        screen_x = iso_x - self.camera.x
+        screen_y = iso_y - self.camera.y
+        return screen_x, screen_y

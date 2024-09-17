@@ -71,10 +71,10 @@ class Helicopter:
             if projectile.lifetime <= 0:
                 self.projectiles.remove(projectile)
 
-    def draw(self, surface: Surface, camera_offset: tuple[int, int]):
+    def draw(self, surface: Surface, position: tuple[int, int]):
         # Draw shadow under the helicopter
-        shadow_x = self.x - camera_offset[0] - 20  # Offset to the right
-        shadow_y = self.y - camera_offset[1] + 40  # Offset down
+        shadow_x = position[0] - 20  # Offset to the right
+        shadow_y = position[1] + 40  # Offset down
         pygame.draw.ellipse(
             surface,
             (128, 128, 128),  # Gray color for shadow
@@ -84,15 +84,15 @@ class Helicopter:
         pygame.draw.circle(
             surface,
             (255, 255, 255),
-            [self.x - camera_offset[0], self.y - camera_offset[1]],
+            [position[0], position[1]],
             20,
         )
-        end_x = self.x + 30 * math.cos(math.radians(self.angle))
-        end_y = self.y - 30 * math.sin(math.radians(self.angle))
+        end_x = position[0] + 30 * math.cos(math.radians(self.angle))
+        end_y = position[1] - 30 * math.sin(math.radians(self.angle))
         pygame.draw.line(
             surface,
             (255, 255, 255),
-            [self.x - camera_offset[0], self.y - camera_offset[1]],
-            [end_x - camera_offset[0], end_y - camera_offset[1]],
+            [position[0], position[1]],
+            [end_x, end_y],
             3,
         )
