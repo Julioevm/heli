@@ -1,5 +1,6 @@
 import random
 import pygame
+from pygame.surface import Surface
 
 
 class Enemy:
@@ -20,13 +21,13 @@ class Enemy:
         self.x = max(0, min(self.x, self.width))
         self.y = max(0, min(self.y, self.height))
 
-    def draw(self, surface):
+    def draw(self, surface: Surface, position: tuple[int, int]):
         pygame.draw.rect(
             surface,
             self.color,
             (
-                int(self.x) - self.size // 2,
-                int(self.y) - self.size // 2,
+                position[0] - self.size // 2,
+                position[1] - self.size // 2,
                 self.size,
                 self.size,
             ),

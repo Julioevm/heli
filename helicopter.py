@@ -1,14 +1,15 @@
 import math
 import pygame
 from projectile import Bullet, Missile
+from pygame.surface import Surface
 
 
 class Helicopter:
-    def __init__(self, width, height):
+    def __init__(self, width, height, x, y):
         self.width = width
         self.height = height
-        self.x = width // 2
-        self.y = height // 2
+        self.x = x
+        self.y = y
         self.angle = 0
         self.vx = 0
         self.vy = 0
@@ -76,8 +77,8 @@ class Helicopter:
             if projectile.lifetime <= 0:
                 self.projectiles.remove(projectile)
 
-    def draw(self, surface):
-        pygame.draw.circle(surface, (255, 255, 255), (int(self.x), int(self.y)), 20)
-        end_x = self.x + 30 * math.cos(math.radians(self.angle))
-        end_y = self.y - 30 * math.sin(math.radians(self.angle))
-        pygame.draw.line(surface, (255, 255, 255), (self.x, self.y), (end_x, end_y), 3)
+    def draw(self, surface: Surface, position: tuple[int, int]):
+        pygame.draw.circle(surface, (255, 255, 255), position, 20)
+        end_x = position[0] + 30 * math.cos(math.radians(self.angle))
+        end_y = position[1] - 30 * math.sin(math.radians(self.angle))
+        pygame.draw.line(surface, (255, 255, 255), position, (end_x, end_y), 3)

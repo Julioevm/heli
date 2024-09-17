@@ -1,14 +1,17 @@
-import pygame
 from helicopter import Helicopter
 from enemy import Soldier, Tank
 from pytmx.util_pygame import load_pygame
+from camera import Camera
 
 
 class GameMap:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.helicopter = Helicopter(width, height)
+        self.helicopter = Helicopter(
+            width, height, width // 2, height // 2
+        )  # Start at center
+        self.camera = Camera(width, height)
         self.enemies = []
         self.spawn_enemies()
         self.tmx_data = load_pygame("assets/maps/test map.tmx")
@@ -25,6 +28,7 @@ class GameMap:
 
     def update(self):
         self.helicopter.update()
+        self.camera.update(self.helicopter)
 
         for enemy in self.enemies[:]:
             enemy.update()
@@ -43,23 +47,36 @@ class GameMap:
                 iso_x = (x - y) * self.tile_width // 2
                 iso_y = (x + y) * self.tile_height // 4
 
-                # Center the map
-                center_offset_x = self.width // 2 - self.tile_width // 2
-                center_offset_y = self.tile_height
+                # Apply camera offset
+                screen_x = iso_x + self.camera.x
+                screen_y = iso_y + self.camera.y
 
-                # Draw the tile
-                surface.blit(tile, (iso_x + center_offset_x, iso_y + center_offset_y))
+                # Draw the tile if it's on screen
+                if (
+                    -self.tile_width <= screen_x <= self.width
+                    and -self.tile_height <= screen_y <= self.height
+                ):
+                    surface.blit(tile, (screen_x, screen_y))
 
-        # Draw enemies (you may need to adjust their positions for isometric view)
+        # Draw enemies
         for enemy in self.enemies:
-            enemy.draw(surface)
+            enemy_pos = (enemy.x + self.camera.x, enemy.y + self.camera.y)
+            enemy.draw(surface, enemy_pos)
 
-        # Draw helicopter projectiles (may need position adjustment)
+        # Draw helicopter projectiles
         for projectile in self.helicopter.projectiles:
-            projectile.draw(surface)
+            projectile_pos = (
+                projectile.x + self.camera.x,
+                projectile.y + self.camera.y,
+            )
+            projectile.draw(surface, projectile_pos)
 
-        # Draw helicopter (may need position adjustment)
-        self.helicopter.draw(surface)
+        # Draw helicopter
+        heli_pos = (
+            self.helicopter.x + self.camera.x,
+            self.helicopter.y + self.camera.y,
+        )
+        self.helicopter.draw(surface, heli_pos)
 
     @staticmethod
     def check_collision(projectile, enemy):
