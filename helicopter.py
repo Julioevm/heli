@@ -72,6 +72,15 @@ class Helicopter:
                 self.projectiles.remove(projectile)
 
     def draw(self, surface: Surface, camera_offset: tuple[int, int]):
+        # Draw shadow under the helicopter
+        shadow_x = self.x - camera_offset[0] - 20  # Offset to the right
+        shadow_y = self.y - camera_offset[1] + 40  # Offset down
+        pygame.draw.ellipse(
+            surface,
+            (128, 128, 128),  # Gray color for shadow
+            [shadow_x, shadow_y, 40, 20],
+        )
+        # Draw the helicopter
         pygame.draw.circle(
             surface,
             (255, 255, 255),
