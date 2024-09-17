@@ -13,14 +13,16 @@ class GameMap:
         self.tile_width = self.tileset.tilewidth
         self.tile_height = self.tileset.tileheight
 
-        # Calculate map dimensions
-        self.width = self.tmx_data.width * self.tile_width
-        self.height = self.tmx_data.height * self.tile_height
+        # Calculate map dimensions for isometric view
+        map_width_tiles = self.tmx_data.width
+        map_height_tiles = self.tmx_data.height
+        self.width = (map_width_tiles + map_height_tiles) * self.tile_width // 2
+        self.height = (map_width_tiles + map_height_tiles) * self.tile_height // 4
+
+        print(f"Map size: {self.width}x{self.height}")
 
         # Initialize helicopter at the center of the map
         self.helicopter = Helicopter(self.width // 2, self.height // 2)
-
-        print(self.width, self.height)
 
         # Initialize camera with map dimensions
         self.camera = Camera(screen_width, screen_height, self.width, self.height)
