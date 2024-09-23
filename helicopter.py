@@ -68,14 +68,24 @@ class Helicopter(pygame.sprite.Sprite):
         if self.bullet_cooldown == 0:
             projectile_x = self.x + 30 * math.cos(math.radians(self.angle))
             projectile_y = self.y - 30 * math.sin(math.radians(self.angle))
-            self.projectiles.append(Bullet(projectile_x, projectile_y, self.angle))
+            # Add helicopter's velocity to the bullet's initial velocity
+            initial_vx = self.vx + 10 * math.cos(math.radians(self.angle))
+            initial_vy = self.vy - 10 * math.sin(math.radians(self.angle))
+            self.projectiles.append(
+                Bullet(projectile_x, projectile_y, self.angle, initial_vx, initial_vy)
+            )
             self.bullet_cooldown = self.bullet_delay
 
     def shoot_missile(self):
         if self.missile_cooldown == 0:
             projectile_x = self.x + 30 * math.cos(math.radians(self.angle))
             projectile_y = self.y - 30 * math.sin(math.radians(self.angle))
-            self.projectiles.append(Missile(projectile_x, projectile_y, self.angle))
+            # Add helicopter's velocity to the missile's initial velocity
+            initial_vx = self.vx + 5 * math.cos(math.radians(self.angle))
+            initial_vy = self.vy - 5 * math.sin(math.radians(self.angle))
+            self.projectiles.append(
+                Missile(projectile_x, projectile_y, self.angle, initial_vx, initial_vy)
+            )
             self.missile_cooldown = self.missile_delay
 
     def update(self):
