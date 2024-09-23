@@ -3,8 +3,9 @@ import pygame
 from pygame.surface import Surface
 
 
-class Enemy:
+class Enemy(pygame.sprite.Sprite):
     def __init__(self, width, height, size, health, color, damage):
+        super().__init__()
         self.width = width
         self.height = height
         self.x = random.randint(0, width)

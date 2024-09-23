@@ -3,8 +3,9 @@ import pygame
 from pygame.surface import Surface
 
 
-class Projectile:
+class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y, angle, speed, lifetime, color, size, damage):
+        super().__init__()
         self.x = x
         self.y = y
         self.angle = angle

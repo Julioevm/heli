@@ -21,7 +21,7 @@ class GameMap:
         self.height = (map_width_tiles + map_height_tiles) * self.tile_height // 4
 
         # Initialize helicopter at the center of the map
-        self.helicopter = Helicopter(self.width // 2, self.height // 2)
+        self.helicopter = Helicopter(self.width // 2, self.height // 2, 0)
 
         # Initialize camera with map dimensions
         self.camera = Camera(screen_width, screen_height, self.width, self.height)
